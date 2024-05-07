@@ -5,10 +5,10 @@ import org.openjdk.jmh.annotations.{Setup, Level, TearDown}
 import scala.concurrent.Await
 
 case class RedisState(initF: () => Unit = () => ()) {
-  val akkaSystem = akka.actor.ActorSystem()
-  val redis = RedisClient()(akkaSystem)
+  val pekkoSystem = org.apache.pekko.actor.ActorSystem()
+  val redis = RedisClient()(pekkoSystem)
 
-  implicit val exec = akkaSystem.dispatchers.lookup(Redis.dispatcher.name)
+  implicit val exec = pekkoSystem.dispatchers.lookup(Redis.dispatcher.name)
 
   import scala.concurrent.duration._
 
@@ -17,8 +17,8 @@ case class RedisState(initF: () => Unit = () => ()) {
   @TearDown(Level.Trial)
   def down: Unit = {
     redis.stop()
-    akkaSystem.shutdown
-    akkaSystem.awaitTermination()
+    pekkoSystem.shutdown
+    pekkoSystem.awaitTermination()
   }
 }
 

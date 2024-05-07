@@ -4,7 +4,7 @@ import scala.concurrent._
 import scala.concurrent.duration._
 import org.scalameter.api._
 
-import akka.actor.ActorSystem
+import org.apache.pekko.actor.ActorSystem
 import scala.collection.Iterator
 
 import org.scalameter._
@@ -116,8 +116,8 @@ object RedisBenchPool extends PerformanceTest {
 
   def redisSetUp(init: RedisClient => Unit = _ => {})(data: (Int, RedisBenchContextPool)) = data match {
     case (i: Int, redisBench: RedisBenchContextPool) => {
-      redisBench.akkaSystem = akka.actor.ActorSystem()
-      redisBench.redis = RedisClientPool(Seq(RedisServer(), RedisServer(), RedisServer()))(redisBench.akkaSystem)
+      redisBench.pekkoSystem = org.apache.pekko.actor.ActorSystem()
+      redisBench.redis = RedisClientPool(Seq(RedisServer(), RedisServer(), RedisServer()))(redisBench.pekkoSystem)
       Await.result(redisBench.redis.ping(), 2 seconds)
     }
   }
@@ -125,9 +125,9 @@ object RedisBenchPool extends PerformanceTest {
   def redisTearDown(data: (Int, RedisBenchContextPool)) = data match {
     case (i: Int, redisBench: RedisBenchContextPool) =>
       redisBench.redis.stop()
-      redisBench.akkaSystem.shutdown()
-      redisBench.akkaSystem.awaitTermination()
+      redisBench.pekkoSystem.shutdown()
+      redisBench.pekkoSystem.awaitTermination()
   }
 }
 
-class RedisBenchContextPool(var redis: RedisClientPool = null, var akkaSystem: ActorSystem = null)
+class RedisBenchContextPool(var redis: RedisClientPool = null, var pekkoSystem: ActorSystem = null)

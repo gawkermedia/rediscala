@@ -1,6 +1,6 @@
 package redis
 
-import akka.util.ByteString
+import org.apache.pekko.util.ByteString
 import redis.protocol._
 import scala.util.Try
 import scala.annotation.{tailrec, implicitNotFound}
@@ -37,6 +37,7 @@ object MultiBulkConverter {
         val builder = Seq.newBuilder[(R, Double)]
         s.grouped(2).foreach {
           case Seq(a, b) => builder += ((deserializer.deserialize(a), b.utf8String.toDouble))
+          case _ => ()
         }
         builder.result()
       }
@@ -83,6 +84,7 @@ object MultiBulkConverter {
                 val builder = Seq.newBuilder[(String, String)]
                 s.grouped(2).foreach {
                   case Seq(a, b) => builder += ((a.toString, b.toString))
+                  case _ => ()
                 }
                 builder.result()
             }.getOrElse(Seq())

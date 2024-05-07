@@ -2,7 +2,7 @@ package redis.commands
 
 import redis._
 import scala.concurrent.{Future, Await}
-import akka.util.ByteString
+import org.apache.pekko.util.ByteString
 import redis.api._
 
 class KeysSpec extends RedisStandaloneServer {
@@ -24,7 +24,7 @@ class KeysSpec extends RedisStandaloneServer {
         d <- redis.dump("dumpKey")
       } yield {
         s mustEqual true
-        d mustEqual Some(ByteString(0, 5, 118, 97, 108, 117, 101, 8, 0, 56, -37, 45, -121, 104, -77, 17, 86))
+        d mustEqual Some(ByteString(0, 5, 118, 97, 108, 117, 101, 11, 0, -24, 41, 124, 75, 60, 53, 114, -25))
       }
       Await.result(r, timeOut)
     }
@@ -349,7 +349,7 @@ class KeysSpec extends RedisStandaloneServer {
         restore <- redis.restore("restoreKey", serializedValue = dump.get)
       } yield {
         s mustEqual true
-        dump mustEqual Some(ByteString(0, 5, 118, 97, 108, 117, 101, 8, 0, 56, -37, 45, -121, 104, -77, 17, 86))
+        dump mustEqual Some(ByteString(0, 5, 118, 97, 108, 117, 101, 11, 0, -24, 41, 124, 75, 60, 53, 114, -25))
         restore mustEqual true
       }
       Await.result(r, timeOut)

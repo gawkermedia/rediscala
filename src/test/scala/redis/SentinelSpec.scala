@@ -2,7 +2,7 @@ package redis
 
 import scala.concurrent._
 import scala.concurrent.duration._
-import akka.testkit._
+import org.apache.pekko.testkit._
 import org.specs2.concurrent.ExecutionEnv
 
 class SentinelSpec(implicit ee: ExecutionEnv) extends RedisSentinelClients("SentinelSpec") {

@@ -4,15 +4,15 @@ import scala.compat.Platform
 import scala.concurrent._
 import scala.concurrent.duration._
 import redis.{RedisStandaloneServer}
-import akka.actor.{Props, ActorRef}
+import org.apache.pekko.actor.{Props, ActorRef}
 import java.net.InetSocketAddress
-import akka.io.Tcp._
-import akka.io.Tcp.Connected
-import akka.io.Tcp.Register
-import akka.io.Tcp.Connect
-import akka.io.Tcp.CommandFailed
-import akka.util.{ByteStringBuilder, ByteString}
-import akka.pattern.ask
+import org.apache.pekko.io.Tcp._
+import org.apache.pekko.io.Tcp.Connected
+import org.apache.pekko.io.Tcp.Register
+import org.apache.pekko.io.Tcp.Connect
+import org.apache.pekko.io.Tcp.CommandFailed
+import org.apache.pekko.util.{ByteStringBuilder, ByteString}
+import org.apache.pekko.pattern.ask
 import redis.actors.{WriteAck, RedisClientActor}
 
 /*

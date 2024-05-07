@@ -14,44 +14,12 @@ A worker actor handles I/O operations (I/O bounds), another handles decoding of 
 
 If you use SBT, you just have to edit `build.sbt` and add the following:
 
-From version 1.9.0: 
- * use akka 2.5.23 (java 1.8)
+From version 1.9.0-pekko: 
+ * use pekko 1.0.2
  * released for scala
-   * 2.11
-   * 2.12
    * 2.13
 ```scala
-libraryDependencies += "com.github.etaty" %% "rediscala" % "1.9.0"
-```
-
-From version 1.8.0: 
- * use akka 2.4.12 (java 1.8)
- * released for scala 2.11 & 2.12
-```scala
-libraryDependencies += "com.github.etaty" %% "rediscala" % "1.8.0"
-```
-
-From version 1.3.1: 
- * use akka 2.3
- * released for scala 2.10 & 2.11
-```scala
-// new repo on maven.org
-libraryDependencies += "com.github.etaty" %% "rediscala" % "1.7.0"
-
-
-// old repo on bintray (1.5.0 and inferior version)
-resolvers += "rediscala" at "http://dl.bintray.com/etaty/maven"
-libraryDependencies += "com.etaty.rediscala" %% "rediscala" % "1.5.0"
-```
-
-For older rediscala versions (<= 1.3):
- * use akka 2.2
- * released for scala 2.10 only
- * use github "repo"
-```scala
-resolvers += "rediscala" at "https://raw.github.com/etaty/rediscala-mvn/master/releases/"
-
-libraryDependencies += "com.etaty.rediscala" %% "rediscala" % "1.3"
+libraryDependencies += "com.github.etaty" %% "rediscala" % "1.9.0-pekko"
 ```
 
 ### Connect to the database
@@ -63,7 +31,7 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object Main extends App {
-  implicit val akkaSystem = akka.actor.ActorSystem()
+  implicit val pekkoSystem = org.apache.pekko.actor.ActorSystem()
 
   val redis = RedisClient()
 
@@ -74,7 +42,7 @@ object Main extends App {
   })
   Await.result(futurePong, 5 seconds)
 
-  akkaSystem.shutdown()
+  pekkoSystem.shutdown()
 }
 ```
 
@@ -151,20 +119,20 @@ or extend the actor [RedisSubscriberActor](http://etaty.github.io/rediscala/late
 
 ```scala
 object ExamplePubSub extends App {
-  implicit val akkaSystem = akka.actor.ActorSystem()
+  implicit val pekkoSystem = org.apache.pekko.actor.ActorSystem()
 
   val redis = RedisClient()
 
   // publish after 2 seconds every 2 or 5 seconds
-  akkaSystem.scheduler.schedule(2 seconds, 2 seconds)(redis.publish("time", System.currentTimeMillis()))
-  akkaSystem.scheduler.schedule(2 seconds, 5 seconds)(redis.publish("pattern.match", "pattern value"))
-  // shutdown Akka in 20 seconds
-  akkaSystem.scheduler.scheduleOnce(20 seconds)(akkaSystem.shutdown())
+  pekkoSystem.scheduler.schedule(2 seconds, 2 seconds)(redis.publish("time", System.currentTimeMillis()))
+  pekkoSystem.scheduler.schedule(2 seconds, 5 seconds)(redis.publish("pattern.match", "pattern value"))
+  // shutdown Pekko in 20 seconds
+  pekkoSystem.scheduler.scheduleOnce(20 seconds)(pekkoSystem.shutdown())
 
   val channels = Seq("time")
   val patterns = Seq("pattern.*")
   // create SubscribeActor instance
-  akkaSystem.actorOf(Props(classOf[SubscribeActor], channels, patterns).withDispatcher("rediscala.rediscala-client-worker-dispatcher"))
+  pekkoSystem.actorOf(Props(classOf[SubscribeActor], channels, patterns).withDispatcher("rediscala.rediscala-client-worker-dispatcher"))
 
 }
 
@@ -227,7 +195,7 @@ The `write` commands are sent to the master, while the read commands are sent to
 By default, the actors in this project will use the dispatcher `rediscala.rediscala-client-worker-dispatcher`. If you want to use another dispatcher, just config the implicit value of `redisDispatcher`:
 
 ```scala
-implicit val redisDispatcher = RedisDispatcher("akka.actor.default-dispatcher")
+implicit val redisDispatcher = RedisDispatcher("pekko.actor.default-dispatcher")
 ```
 
 ### ByteStringSerializer ByteStringDeserializer ByteStringFormatter

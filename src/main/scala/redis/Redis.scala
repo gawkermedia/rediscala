@@ -1,7 +1,7 @@
 package redis
 
-import akka.actor._
-import akka.util.Helpers
+import org.apache.pekko.actor._
+import org.apache.pekko.util.Helpers
 import redis.commands._
 import scala.concurrent._
 import java.net.InetSocketAddress
@@ -32,7 +32,7 @@ abstract class RedisClientActorLike(system: ActorSystem, redisDispatcher: RedisD
   val name: String
   val password: Option[String] = None
   val db: Option[Int] = None
-  implicit val executionContext = system.dispatchers.lookup(redisDispatcher.name)
+  implicit val executionContext: ExecutionContext = system.dispatchers.lookup(redisDispatcher.name)
 
   val redisConnection: ActorRef = system.actorOf(RedisClientActor.props(new InetSocketAddress(host, port),
     getConnectOperations, onConnectStatus, redisDispatcher.name, connectTimeout)
@@ -111,7 +111,7 @@ case class RedisPubSub(
 
   val redisConnection: ActorRef = system.actorOf(
     Props(classOf[RedisSubscriberActorWithCallback],
-      new InetSocketAddress(host, port), channels, patterns, onMessage, onPMessage, authPassword,onConnectStatus)
+      new InetSocketAddress(host, port), channels, patterns, onMessage, onPMessage, authPassword, onConnectStatus())
       .withDispatcher(redisDispatcher.name),
     name + '-' + Redis.tempName()
   )

@@ -2,7 +2,7 @@ package redis.commands
 
 import redis._
 import scala.concurrent.{Promise, Future, ExecutionContext}
-import akka.actor._
+import org.apache.pekko.actor._
 import scala.collection.immutable.Queue
 import redis.actors.ReplyErrorException
 import redis.protocol._
@@ -10,7 +10,7 @@ import redis.protocol.MultiBulk
 import scala.Some
 import scala.util.{Failure, Success}
 import redis.api.transactions.{Watch, Exec, Multi}
-import akka.util.ByteString
+import org.apache.pekko.util.ByteString
 
 trait Transactions extends ActorRequest {
 

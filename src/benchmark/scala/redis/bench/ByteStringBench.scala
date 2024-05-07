@@ -1,7 +1,7 @@
 package redis.bench
 
 import org.scalameter.api._
-import akka.util.ByteString
+import org.apache.pekko.util.ByteString
 import redis.protocol.ParseNumber
 
 object ByteStringBench extends PerformanceTest.Microbenchmark {
