@@ -2,9 +2,9 @@ package redis.actors
 
 import java.net.InetSocketAddress
 
-import akka.actor.SupervisorStrategy.Stop
-import akka.actor._
-import akka.util.{ByteString, ByteStringBuilder}
+import org.apache.pekko.actor.SupervisorStrategy.Stop
+import org.apache.pekko.actor._
+import org.apache.pekko.util.{ByteString, ByteStringBuilder}
 import redis.{Operation, Transaction}
 
 import scala.collection.mutable

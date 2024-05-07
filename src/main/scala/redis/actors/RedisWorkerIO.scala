@@ -1,15 +1,15 @@
 package redis.actors
 
-import akka.actor.{ActorLogging, ActorRef, Actor}
-import akka.io.Tcp
-import akka.util.{ByteStringBuilder, ByteString}
+import org.apache.pekko.actor.{ActorLogging, ActorRef, Actor}
+import org.apache.pekko.io.Tcp
+import org.apache.pekko.util.{ByteStringBuilder, ByteString}
 import java.net.InetSocketAddress
-import akka.io.Tcp._
-import akka.io.Tcp.Connected
-import akka.io.Tcp.Register
-import akka.io.Tcp.Connect
-import akka.io.Tcp.CommandFailed
-import akka.io.Tcp.Received
+import org.apache.pekko.io.Tcp._
+import org.apache.pekko.io.Tcp.Connected
+import org.apache.pekko.io.Tcp.Register
+import org.apache.pekko.io.Tcp.Connect
+import org.apache.pekko.io.Tcp.CommandFailed
+import org.apache.pekko.io.Tcp.Received
 import scala.concurrent.duration.FiniteDuration
 
 abstract class RedisWorkerIO(val address: InetSocketAddress, onConnectStatus: Boolean => Unit, connectTimeout: Option[FiniteDuration] = None) extends Actor with ActorLogging {
@@ -18,7 +18,7 @@ abstract class RedisWorkerIO(val address: InetSocketAddress, onConnectStatus: Bo
 
   import context._
 
-  val tcp = akka.io.IO(Tcp)(context.system)
+  val tcp = org.apache.pekko.io.IO(Tcp)(context.system)
 
   // todo watch tcpWorker
   var tcpWorker: ActorRef = null
@@ -61,8 +61,8 @@ abstract class RedisWorkerIO(val address: InetSocketAddress, onConnectStatus: Bo
   }
 
   def onConnected(cmd: Connected) = {
-    sender ! Register(self)
-    tcpWorker = sender
+    sender() ! Register(self)
+    tcpWorker = sender()
     initConnectedBuffer()
     tryInitialWrite() // TODO write something in head buffer
     become(connected)
@@ -80,14 +80,14 @@ abstract class RedisWorkerIO(val address: InetSocketAddress, onConnectStatus: Bo
   private def reading: Receive = {
     case WriteAck => tryWrite()
     case Received(dataByteString) => {
-      if(sender == tcpWorker)
+      if(sender() == tcpWorker)
         onDataReceived(dataByteString)
       else
         onDataReceivedOnClosingConnection(dataByteString)
     }
     case a: InetSocketAddress => onAddressChanged(a)
     case c: ConnectionClosed => {
-      if(sender == tcpWorker)
+      if(sender() == tcpWorker)
         onConnectionClosed(c)
       else {
         onConnectStatus(false)

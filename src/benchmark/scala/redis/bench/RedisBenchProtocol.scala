@@ -1,7 +1,7 @@
 package redis.bench
 
 import redis.protocol.RedisProtocolRequest
-import akka.util.ByteString
+import org.apache.pekko.util.ByteString
 import org.scalameter.api._
 
 object RedisBenchProtocol extends PerformanceTest.Regression {

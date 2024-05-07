@@ -18,7 +18,7 @@ class Get extends RedisStateHelper {
 
   override def initRedisState(): Unit = {
     import scala.concurrent.duration._
-    implicit val exec = rs.akkaSystem.dispatchers.lookup(Redis.dispatcher.name)
+    implicit val exec = rs.pekkoSystem.dispatchers.lookup(Redis.dispatcher.name)
 
     Await.result(rs.redis.set(getKey, "value"), 20 seconds)
   }
@@ -27,7 +27,7 @@ class Get extends RedisStateHelper {
   @BenchmarkMode(Array(Mode.SingleShotTime))
   def measurePing(): Unit = {
     import scala.concurrent.duration._
-    implicit def exec = rs.akkaSystem.dispatchers.lookup(Redis.dispatcher.name)
+    implicit def exec = rs.pekkoSystem.dispatchers.lookup(Redis.dispatcher.name)
 
     val r = for (i <- (0 to iteration).toVector) yield {
       rs.redis.get(getKey)
